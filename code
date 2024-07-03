@@ -1,0 +1,40 @@
+import requests
+import pandas as pd
+
+shipment_ids = ["162547816", "162547823"]
+
+folder_path = r'G:\My Drive\Python sample\ov2\shipment_order'
+token = "755RMZRsOsQHNynZunn5g2ys1B8sNp1p"
+
+for shipment_id in shipment_ids:
+    url = f"https://walrus.ninjavan.co/vn/hub/1.1/shipments?id={shipment_id}"
+    payload = {
+        "id": shipment_id,
+        "include_events": "false",
+        "include_scans": "true"
+    }
+
+    headers = {
+        "Authorization": f"Bearer {token}"
+    }
+
+    file_name = f"{shipment_id}.csv"
+    file_path = folder_path + "/" + file_name
+
+
+    # Gửi yêu cầu GET
+    response = requests.get(url, params=payload, headers=headers)
+
+    # Kiểm tra xem yêu cầu có thành công không
+    if response.status_code == 200:
+        data = response.json()
+        scans = data['shipments'][0]['scans']['added_scans']
+        add_scan_orders = [{'scan_value': item['scan_value'], 'order_id': item['order_id'], 'source': item['source']} for item in scans]
+        removed = data['shipments'][0]['scans']['removed_scans']
+        remove_scan_orders = [item['scan_value'] for item in removed]
+        current_orders = [item for item in add_scan_orders if item['scan_value'] not in remove_scan_orders]
+        df = pd.DataFrame(current_orders)
+        print(df)
+        df.to_csv(file_path, index=False)
+    else:
+        print("Yêu cầu không thành công. Mã trạng thái:", response.status_code)
