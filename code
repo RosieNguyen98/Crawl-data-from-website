@@ -4,7 +4,7 @@ import pandas as pd
 shipment_ids = ["162547816", "162547823"]
 
 folder_path = r'G:\My Drive\Python sample\ov2\shipment_order'
-token = "755RMZRsOsQHNynZunn5g2ys1B8sNp1p"
+token = ....
 
 for shipment_id in shipment_ids:
     url = f"https://walrus.ninjavan.co/vn/hub/1.1/shipments?id={shipment_id}"
